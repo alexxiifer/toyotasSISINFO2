@@ -1,0 +1,35 @@
+package bd;
+
+import modelo.Coche;
+import java.sql.*;
+
+public class CocheBD {
+    private Connection conn;
+
+    public CocheBD() throws SQLException {
+        conn = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/coches_db",
+                "root",
+                "XDPROcar123"
+        );
+    }
+
+    public void agregarCoche(Coche coche) throws SQLException {
+        String sql = "INSERT INTO coches(nombre, precio) VALUES(?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, coche.getNombre());
+            ps.setDouble(2, coche.getPrecio());
+            ps.executeUpdate();
+        }
+    }
+
+    public boolean existeCoche(String nombre) throws SQLException {
+        String sql = "SELECT 1 FROM coches WHERE nombre = ? LIMIT 1";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, nombre);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+}
